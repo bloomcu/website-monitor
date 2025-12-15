@@ -9,7 +9,7 @@ class WebsitesController extends Controller
 {
     public function index()
     {
-        return Website::all();
+        return Website::with('pages')->get();
     }
 
     public function store(Request $request)

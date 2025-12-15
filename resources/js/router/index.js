@@ -8,6 +8,7 @@ import Dashboard from '@/pages/dashboard/Dashboard.vue'
 import WebsitesIndex from '@/pages/websites/WebsitesIndex.vue'
 import WebsitesCreate from '@/pages/websites/WebsitesCreate.vue'
 import WebsitesShow from '@/pages/websites/WebsitesShow.vue'
+import WebsitesEdit from '@/pages/websites/WebsitesEdit.vue'
 
 const routes = [
     {
@@ -30,6 +31,12 @@ const routes = [
         path: '/websites/create',
         name: 'websites.create',
         component: WebsitesCreate,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/websites/:id/edit',
+        name: 'websites.edit',
+        component: WebsitesEdit,
         meta: { requiresAuth: true }
     },
     {

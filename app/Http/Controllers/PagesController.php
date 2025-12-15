@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Page;
 use App\Models\Website;
+use App\Jobs\CheckPageUptime;
 use Illuminate\Http\Request;
 
 class PagesController extends Controller
@@ -19,7 +20,11 @@ class PagesController extends Controller
             'url' => 'required|url',
         ]);
 
-        return $website->pages()->create($validated);
+        $page = $website->pages()->create($validated);
+
+        CheckPageUptime::dispatch($page);
+
+        return $page;
     }
 
     public function show(Page $page)

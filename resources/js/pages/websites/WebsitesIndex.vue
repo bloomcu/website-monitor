@@ -103,19 +103,95 @@ const goToWebsite = (id) => {
                     v-for="website in websites"
                     :key="website.id"
                     @click="goToWebsite(website.id)"
-                    class="relative rounded-lg border border-gray-300 bg-white px-6 py-5 shadow-sm flex items-center space-x-3 hover:border-gray-400 focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500 cursor-pointer"
+                    class="relative rounded-lg border bg-white px-6 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    :class="{
+                        'border-green-300 bg-green-50': website.is_healthy && website.total_pages_count > 0,
+                        'border-red-300 bg-red-50': !website.is_healthy && website.total_pages_count > 0,
+                        'border-gray-300': website.total_pages_count === 0
+                    }"
                 >
-                    <div class="flex-shrink-0">
-                        <span class="inline-flex items-center justify-center h-10 w-10 rounded-full bg-indigo-100">
-                            <span class="text-indigo-600 font-medium leading-none">{{ website.name.substring(0, 2).toUpperCase() }}</span>
-                        </span>
+                    <div class="flex items-start justify-between">
+                        <div class="flex items-center space-x-3 flex-1 min-w-0">
+                            <div class="flex-shrink-0">
+                                <span
+                                    class="inline-flex items-center justify-center h-10 w-10 rounded-full"
+                                    :class="{
+                                        'bg-green-100': website.is_healthy && website.total_pages_count > 0,
+                                        'bg-red-100': !website.is_healthy && website.total_pages_count > 0,
+                                        'bg-indigo-100': website.total_pages_count === 0
+                                    }"
+                                >
+                                    <span
+                                        class="font-medium leading-none"
+                                        :class="{
+                                            'text-green-600': website.is_healthy && website.total_pages_count > 0,
+                                            'text-red-600': !website.is_healthy && website.total_pages_count > 0,
+                                            'text-indigo-600': website.total_pages_count === 0
+                                        }"
+                                    >
+                                        {{ website.name.substring(0, 2).toUpperCase() }}
+                                    </span>
+                                </span>
+                            </div>
+                            <div class="flex-1 min-w-0">
+                                <a href="#" class="focus:outline-none">
+                                    <span class="absolute inset-0" aria-hidden="true"></span>
+                                    <p class="text-sm font-medium text-gray-900">{{ website.name }}</p>
+                                    <p class="text-sm text-gray-500 truncate" v-if="website.base_url">{{ website.base_url }}</p>
+                                </a>
+                            </div>
+                        </div>
+                        <div class="flex-shrink-0 ml-2">
+                            <span
+                                v-if="website.total_pages_count > 0"
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium"
+                                :class="{
+                                    'bg-green-100 text-green-800': website.is_healthy,
+                                    'bg-red-100 text-red-800': !website.is_healthy
+                                }"
+                            >
+                                <svg
+                                    class="-ml-0.5 mr-1.5 h-2 w-2"
+                                    :class="{
+                                        'text-green-400': website.is_healthy,
+                                        'text-red-400': !website.is_healthy
+                                    }"
+                                    fill="currentColor"
+                                    viewBox="0 0 8 8"
+                                >
+                                    <circle cx="4" cy="4" r="3" />
+                                </svg>
+                                {{ website.is_healthy ? 'Healthy' : 'Issues' }}
+                            </span>
+                            <span
+                                v-else
+                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
+                            >
+                                No pages
+                            </span>
+                        </div>
                     </div>
-                    <div class="flex-1 min-w-0">
-                        <a href="#" class="focus:outline-none">
-                            <span class="absolute inset-0" aria-hidden="true"></span>
-                            <p class="text-sm font-medium text-gray-900">{{ website.name }}</p>
-                            <p class="text-sm text-gray-500 truncate" v-if="website.base_url">{{ website.base_url }}</p>
-                        </a>
+
+                    <div v-if="website.total_pages_count > 0" class="mt-4 flex items-center justify-between text-xs">
+                        <div class="flex items-center space-x-4">
+                            <div class="flex items-center text-green-600">
+                                <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                                </svg>
+                                <span class="font-medium">{{ website.pages_up_count }}</span>
+                                <span class="text-gray-500 ml-1">up</span>
+                            </div>
+                            <div class="flex items-center" :class="website.pages_down_count > 0 ? 'text-red-600' : 'text-gray-400'">
+                                <svg class="h-4 w-4 mr-1" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                                </svg>
+                                <span class="font-medium">{{ website.pages_down_count }}</span>
+                                <span class="text-gray-500 ml-1">down</span>
+                            </div>
+                        </div>
+                        <div class="text-gray-500">
+                            {{ website.total_pages_count }} {{ website.total_pages_count === 1 ? 'page' : 'pages' }}
+                        </div>
                     </div>
                 </div>
             </div>
