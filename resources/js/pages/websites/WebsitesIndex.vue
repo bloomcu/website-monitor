@@ -9,20 +9,39 @@ const router = useRouter()
 const websiteStore = useWebsiteStore()
 const { websites, loading, error } = storeToRefs(websiteStore)
 
+const lastUpdated = ref(null)
+const minutesUntilRefresh = ref(30)
 let refreshInterval = null
+let countdownInterval = null
+
+const fetchData = async () => {
+    await websiteStore.fetchWebsites()
+    lastUpdated.value = new Date()
+    minutesUntilRefresh.value = 30
+}
 
 onMounted(() => {
-    websiteStore.fetchWebsites()
+    fetchData()
 
     // Refresh every 30 minutes (1800000 milliseconds)
     refreshInterval = setInterval(() => {
-        websiteStore.fetchWebsites()
+        fetchData()
     }, 1800000)
+
+    // Update countdown every minute
+    countdownInterval = setInterval(() => {
+        if (minutesUntilRefresh.value > 0) {
+            minutesUntilRefresh.value--
+        }
+    }, 60000)
 })
 
 onBeforeUnmount(() => {
     if (refreshInterval) {
         clearInterval(refreshInterval)
+    }
+    if (countdownInterval) {
+        clearInterval(countdownInterval)
     }
 })
 
@@ -39,7 +58,12 @@ const goToWebsite = (id) => {
     <DefaultLayout>
         <div class="py-6">
             <div class="flex justify-between items-center mb-6">
-                <h1 class="text-2xl font-bold text-gray-900">Websites</h1>
+                <div>
+                    <h1 class="text-2xl font-bold text-gray-900">Websites</h1>
+                    <p v-if="lastUpdated" class="text-xs text-gray-500 mt-1">
+                        Last updated: {{ lastUpdated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }} • Next refresh in {{ minutesUntilRefresh }} {{ minutesUntilRefresh === 1 ? 'minute' : 'minutes' }}
+                    </p>
+                </div>
                 <button
                     @click="goToCreate"
                     class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
