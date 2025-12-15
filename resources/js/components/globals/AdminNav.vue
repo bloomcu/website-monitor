@@ -78,7 +78,7 @@ const toggleMobileAdmin = () => {
     <nav class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur">
         <div class="mx-auto flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
             <div class="flex flex-1 items-center gap-6">
-                <router-link to="/" class="text-lg font-semibold text-neutral-900">Generator Builder</router-link>
+<router-link :to="{ name: 'websites.index' }" class="text-lg font-semibold text-neutral-900">Website Monitor</router-link>
 
                 <div v-if="isAuthenticated" class="hidden items-center gap-1 text-sm font-medium text-neutral-500 md:flex">
                     <router-link v-if="isAdmin" :to="{ name: 'dashboard' }" :class="[navLinkClasses, { [activeNavClasses]: isRouteActive('dashboard') }]">

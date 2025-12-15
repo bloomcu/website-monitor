@@ -15,7 +15,7 @@ export const useWebsiteStore = defineStore('website', {
       this.error = null;
       try {
         const response = await api.get('/websites');
-        this.websites = response.data;
+        this.websites = response;
       } catch (error) {
         this.error = error.message || 'Failed to fetch websites';
         throw error;
@@ -29,7 +29,7 @@ export const useWebsiteStore = defineStore('website', {
       this.error = null;
       try {
         const response = await api.get(`/websites/${id}`);
-        this.website = response.data;
+        this.website = response;
         // Pages might be included or need a separate fetch. 
         // Based on standard API resources, if relationships aren't loaded, we might need to fetch pages.
         // But usually show includes details. If not, we can fetch pages separately.
@@ -50,8 +50,8 @@ export const useWebsiteStore = defineStore('website', {
       this.error = null;
       try {
         const response = await api.post('/websites', websiteData);
-        this.websites.push(response.data);
-        return response.data;
+        this.websites.push(response);
+        return response;
       } catch (error) {
         this.error = error.message || 'Failed to create website';
         throw error;
@@ -67,13 +67,13 @@ export const useWebsiteStore = defineStore('website', {
         // Update in list
         const index = this.websites.findIndex(w => w.id === id);
         if (index !== -1) {
-          this.websites[index] = response.data;
+          this.websites[index] = response;
         }
         // Update current if selected
         if (this.website && this.website.id === id) {
-          this.website = { ...this.website, ...response.data };
+          this.website = { ...this.website, ...response };
         }
-        return response.data;
+        return response;
       } catch (error) {
         this.error = error.message || 'Failed to update website';
         throw error;
@@ -103,9 +103,9 @@ export const useWebsiteStore = defineStore('website', {
       try {
         const response = await api.get(`/websites/${websiteId}/pages`);
         if (this.website && this.website.id == websiteId) {
-          this.website.pages = response.data;
+          this.website.pages = response;
         }
-        return response.data;
+        return response;
       } catch (error) {
         // If it fails, just log or set error
         console.error("Failed to fetch pages", error);
@@ -118,9 +118,9 @@ export const useWebsiteStore = defineStore('website', {
         const response = await api.post(`/websites/${websiteId}/pages`, pageData);
         if (this.website && this.website.id == websiteId) {
           if (!this.website.pages) this.website.pages = [];
-          this.website.pages.push(response.data);
+          this.website.pages.push(response);
         }
-        return response.data;
+        return response;
       } catch (error) {
         this.error = error.message || 'Failed to add page';
         throw error;

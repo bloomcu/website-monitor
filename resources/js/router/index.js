@@ -10,6 +10,10 @@ import WebsitesShow from '@/pages/websites/WebsitesShow.vue'
 
 const routes = [
     {
+        path: '/',
+        redirect: '/websites'
+    },
+    {
         path: '/admin',
         name: 'dashboard',
         component: Dashboard,
