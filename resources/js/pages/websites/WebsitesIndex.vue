@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useWebsiteStore } from '@/stores/website'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
@@ -9,8 +9,21 @@ const router = useRouter()
 const websiteStore = useWebsiteStore()
 const { websites, loading, error } = storeToRefs(websiteStore)
 
+let refreshInterval = null
+
 onMounted(() => {
     websiteStore.fetchWebsites()
+
+    // Refresh every 30 minutes (1800000 milliseconds)
+    refreshInterval = setInterval(() => {
+        websiteStore.fetchWebsites()
+    }, 1800000)
+})
+
+onBeforeUnmount(() => {
+    if (refreshInterval) {
+        clearInterval(refreshInterval)
+    }
 })
 
 const goToCreate = () => {
