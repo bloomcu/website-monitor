@@ -49,4 +49,8 @@ class User extends Authenticatable
             'password' => 'hashed',
         ];
     }
+    public function websites(): HasMany
+    {
+        return $this->hasMany(Website::class);
+    }
 }

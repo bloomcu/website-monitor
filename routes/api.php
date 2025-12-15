@@ -21,3 +21,10 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('users/{user}', [UserController::class, 'show']);
     });
 });
+
+
+use App\Http\Controllers\WebsitesController;
+use App\Http\Controllers\PagesController;
+
+Route::apiResource('websites', WebsitesController::class);
+Route::apiResource('websites.pages', PagesController::class)->shallow();
