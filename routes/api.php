@@ -3,6 +3,8 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\WebsitesController;
+use App\Http\Controllers\PagesController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -20,11 +22,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('users', [UserController::class, 'index']);
         Route::get('users/{user}', [UserController::class, 'show']);
     });
+    // Websites & Pages
+    Route::apiResource('websites', WebsitesController::class);
+    Route::apiResource('websites.pages', PagesController::class)->shallow();
 });
-
-
-use App\Http\Controllers\WebsitesController;
-use App\Http\Controllers\PagesController;
-
-Route::apiResource('websites', WebsitesController::class);
-Route::apiResource('websites.pages', PagesController::class)->shallow();

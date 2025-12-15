@@ -6,6 +6,7 @@ import UsersIndex from '@/pages/users/UsersIndex.vue'
 import UserShow from '@/pages/users/UserShow.vue'
 import Dashboard from '@/pages/dashboard/Dashboard.vue'
 import WebsitesIndex from '@/pages/websites/WebsitesIndex.vue'
+import WebsitesCreate from '@/pages/websites/WebsitesCreate.vue'
 import WebsitesShow from '@/pages/websites/WebsitesShow.vue'
 
 const routes = [
@@ -23,6 +24,12 @@ const routes = [
         path: '/websites',
         name: 'websites.index',
         component: WebsitesIndex,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/websites/create',
+        name: 'websites.create',
+        component: WebsitesCreate,
         meta: { requiresAuth: true }
     },
     {

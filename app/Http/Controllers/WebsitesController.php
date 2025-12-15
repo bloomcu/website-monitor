@@ -19,6 +19,8 @@ class WebsitesController extends Controller
             'base_url' => 'nullable|url',
         ]);
 
+        $validated['user_id'] = $request->user()->id;
+
         return Website::create($validated);
     }
 
