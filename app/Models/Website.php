@@ -21,6 +21,11 @@ class Website extends Model
         return $this->hasMany(Page::class);
     }
 
+    public function recentChecks()
+    {
+        return $this->hasMany(PageCheck::class);
+    }
+
     protected function pagesUpCount(): Attribute
     {
         return Attribute::make(

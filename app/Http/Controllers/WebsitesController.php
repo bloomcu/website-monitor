@@ -26,7 +26,14 @@ class WebsitesController extends Controller
 
     public function show(Website $website)
     {
-        return $website->load('pages');
+        return $website->load([
+            'pages',
+            'recentChecks' => function ($query) {
+                $query->with('page')
+                    ->orderBy('checked_at', 'desc')
+                    ->limit(20);
+            }
+        ]);
     }
 
     public function update(Request $request, Website $website)

@@ -15,4 +15,4 @@ Schedule::call(function () {
     Page::query()->each(function (Page $page) {
         CheckPageUptime::dispatch($page);
     });
-})->everyThirtySeconds();
+})->everyThirtyMinutes();

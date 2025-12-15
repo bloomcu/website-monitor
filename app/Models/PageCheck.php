@@ -9,6 +9,7 @@ class PageCheck extends Model
     public $timestamps = false;
 
     protected $fillable = [
+        'website_id',
         'page_id',
         'status',
         'status_code',
@@ -19,6 +20,11 @@ class PageCheck extends Model
     protected $casts = [
         'checked_at' => 'datetime',
     ];
+
+    public function website()
+    {
+        return $this->belongsTo(Website::class);
+    }
 
     public function page()
     {

@@ -24,6 +24,7 @@ class CheckPageUptime implements ShouldQueue
         $result = $checker->check($this->page->url);
 
         PageCheck::create([
+            'website_id' => $this->page->website_id,
             'page_id' => $this->page->id,
             'status' => $result['status'],
             'status_code' => $result['status_code'],
