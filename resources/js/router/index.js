@@ -51,12 +51,12 @@ const routes = [
         component: Login,
         meta: { guest: true }
     },
-    {
-        path: '/register',
-        name: 'register',
-        component: Register,
-        meta: { guest: true }
-    },
+    // {
+    //     path: '/register',
+    //     name: 'register',
+    //     component: Register,
+    //     meta: { guest: true }
+    // },
     {
         path: '/users',
         name: 'users.index',
@@ -68,7 +68,7 @@ const routes = [
         name: 'users.show',
         component: UserShow,
         meta: { requiresAuth: true, roles: ['admin'] }
-    },
+    }
 ]
 
 const router = createRouter({

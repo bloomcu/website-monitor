@@ -70,10 +70,10 @@ const login = async () => {
                     </button>
                 </div>
 
-                <div class="text-center text-sm text-neutral-600">
+                <!-- <div class="text-center text-sm text-neutral-600">
                     Don't have an account?
                     <router-link to="/register" class="font-medium text-neutral-900 hover:underline"> Register </router-link>
-                </div>
+                </div> -->
             </form>
         </div>
     </div>
