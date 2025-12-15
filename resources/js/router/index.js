@@ -5,13 +5,27 @@ import Register from '@/pages/auth/Register.vue'
 import UsersIndex from '@/pages/users/UsersIndex.vue'
 import UserShow from '@/pages/users/UserShow.vue'
 import Dashboard from '@/pages/dashboard/Dashboard.vue'
+import WebsitesIndex from '@/pages/websites/WebsitesIndex.vue'
+import WebsitesShow from '@/pages/websites/WebsitesShow.vue'
 
 const routes = [
-  {
+    {
         path: '/admin',
         name: 'dashboard',
         component: Dashboard,
         meta: { requiresAuth: true, roles: ['dashboard'] }
+    },
+    {
+        path: '/websites',
+        name: 'websites.index',
+        component: WebsitesIndex,
+        meta: { requiresAuth: true }
+    },
+    {
+        path: '/websites/:id',
+        name: 'websites.show',
+        component: WebsitesShow,
+        meta: { requiresAuth: true }
     },
     {
         path: '/login',
