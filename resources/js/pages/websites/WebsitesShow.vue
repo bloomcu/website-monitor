@@ -1,7 +1,8 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
+import { onClickOutside } from '@vueuse/core'
 import { useWebsiteStore } from '@/stores/website'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
@@ -51,6 +52,19 @@ const deletePage = async (pageId) => {
     await websiteStore.deletePage(pageId)
 }
 
+const checkingPages = ref(new Set())
+
+const checkPageUptime = async (pageId) => {
+    checkingPages.value.add(pageId)
+    try {
+        await websiteStore.checkPageUptime(pageId)
+    } catch (err) {
+        alert('Failed to trigger uptime check')
+    } finally {
+        checkingPages.value.delete(pageId)
+    }
+}
+
 const deleteWebsite = async () => {
     if (!confirm('Are you sure you want to delete this website project? This action cannot be undone.')) return
 
@@ -80,6 +94,71 @@ const formatTimeAgo = (timestamp) => {
     if (days < 7) return `${days}d ago`
     return then.toLocaleDateString()
 }
+
+const showDropdown = ref(false)
+const dropdownRef = ref(null)
+
+const toggleDropdown = () => {
+    showDropdown.value = !showDropdown.value
+}
+
+const closeDropdown = () => {
+    showDropdown.value = false
+}
+
+onClickOutside(dropdownRef, closeDropdown)
+
+const handleEdit = () => {
+    closeDropdown()
+    router.push({ name: 'websites.edit', params: { id: websiteId } })
+}
+
+const handleDelete = () => {
+    closeDropdown()
+    deleteWebsite()
+}
+
+// Page dropdown state management
+const openPageDropdowns = ref(new Set())
+
+const togglePageDropdown = (pageId, event) => {
+    if (event) {
+        event.stopPropagation()
+    }
+    if (openPageDropdowns.value.has(pageId)) {
+        openPageDropdowns.value.delete(pageId)
+    } else {
+        openPageDropdowns.value.clear()
+        openPageDropdowns.value.add(pageId)
+    }
+}
+
+const closePageDropdown = (pageId) => {
+    openPageDropdowns.value.delete(pageId)
+}
+
+const handlePageDelete = (pageId) => {
+    closePageDropdown(pageId)
+    deletePage(pageId)
+}
+
+// Close page dropdowns when clicking outside
+const handleDocumentClick = (event) => {
+    // Check if click is inside any page dropdown container
+    const clickedInsideDropdown = event.target.closest('[data-page-dropdown]')
+    // If click is outside all dropdowns, close them
+    if (!clickedInsideDropdown && openPageDropdowns.value.size > 0) {
+        openPageDropdowns.value.clear()
+    }
+}
+
+onMounted(() => {
+    document.addEventListener('click', handleDocumentClick)
+})
+
+onBeforeUnmount(() => {
+    document.removeEventListener('click', handleDocumentClick)
+})
 </script>
 
 <template>
@@ -144,33 +223,50 @@ const formatTimeAgo = (timestamp) => {
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4 flex md:mt-0 md:ml-4">
+                        <div class="mt-4 flex md:mt-0 md:ml-4 items-center gap-3">
                             <button
                                 @click="refresh"
                                 type="button"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3"
+                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 Refresh
                             </button>
-                            <button
-                                @click="router.push({ name: 'websites.edit', params: { id: websiteId } })"
-                                type="button"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3"
-                            >
-                                Edit
-                            </button>
-                            <button
-                                @click="deleteWebsite"
-                                type="button"
-                                class="inline-flex items-center px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                            >
-                                Delete Project
-                            </button>
+                            <div ref="dropdownRef" class="relative" @keydown.escape="closeDropdown">
+                                <button
+                                    @click="toggleDropdown"
+                                    type="button"
+                                    class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    :aria-expanded="showDropdown"
+                                    aria-haspopup="true"
+                                >
+                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                        <path
+                                            d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"
+                                        />
+                                    </svg>
+                                </button>
+                                <div v-if="showDropdown" class="absolute right-0 mt-2 w-48 rounded-md border border-gray-200 bg-white py-1 shadow-lg z-10">
+                                    <button
+                                        @click="handleEdit"
+                                        type="button"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                    >
+                                        Edit
+                                    </button>
+                                    <button
+                                        @click="handleDelete"
+                                        type="button"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                    >
+                                        Delete Project
+                                    </button>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <!-- Pages Section -->
-                    <div class="bg-white shadow overflow-hidden sm:rounded-lg">
+                    <div class="bg-white shadow overflow-visible sm:rounded-lg">
                         <div class="px-4 py-5 sm:px-6 flex justify-between items-center">
                             <div>
                                 <h3 class="text-lg leading-6 font-medium text-gray-900">Monitored Pages</h3>
@@ -178,7 +274,7 @@ const formatTimeAgo = (timestamp) => {
                             </div>
                             <button
                                 @click="toggleAddForm"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                             >
                                 {{ showAddForm ? 'Cancel' : 'Add Page' }}
                             </button>
@@ -215,7 +311,7 @@ const formatTimeAgo = (timestamp) => {
                                     <div class="pt-6">
                                         <button
                                             type="submit"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm transition-colors"
+                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm"
                                         >
                                             Add Page
                                         </button>
@@ -224,8 +320,8 @@ const formatTimeAgo = (timestamp) => {
                             </form>
                         </div>
 
-                        <div class="border-t border-gray-200">
-                            <ul role="list" class="divide-y divide-gray-200" v-if="website.pages && website.pages.length > 0">
+                        <div class="border-t border-gray-200 overflow-visible">
+                            <ul role="list" class="divide-y divide-gray-200 overflow-visible" v-if="website.pages && website.pages.length > 0">
                                 <li v-for="page in website.pages" :key="page.id" class="px-4 py-4 sm:px-6 hover:bg-gray-50">
                                     <div class="flex items-center justify-between">
                                         <div class="flex flex-1 items-center min-w-0 mr-4">
@@ -233,7 +329,13 @@ const formatTimeAgo = (timestamp) => {
                                                 <StatusBadge :status="page.is_up" />
                                             </div>
                                             <div class="ml-4 truncate">
-                                                <p class="text-sm font-medium text-indigo-600 truncate">{{ page.url }}</p>
+                                                <a
+                                                    :href="page.url"
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    class="text-sm font-medium text-indigo-600 truncate hover:underline"
+                                                    >{{ page.url }}</a
+                                                >
                                                 <div class="flex text-sm text-gray-500 space-x-4 mt-1">
                                                     <span v-if="page.last_status_code">Code: {{ page.last_status_code }}</span>
                                                     <span v-if="page.last_response_time_ms">{{ page.last_response_time_ms }}ms</span>
@@ -241,8 +343,41 @@ const formatTimeAgo = (timestamp) => {
                                                 </div>
                                             </div>
                                         </div>
-                                        <div>
-                                            <button @click="deletePage(page.id)" class="text-red-600 hover:text-red-900 text-sm font-medium">Delete</button>
+                                        <div class="flex items-center gap-5">
+                                            <button
+                                                @click="checkPageUptime(page.id)"
+                                                :disabled="checkingPages.has(page.id)"
+                                                class="text-indigo-600 hover:text-indigo-900 active:text-indigo-800 active:scale-95 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
+                                            >
+                                                {{ checkingPages.has(page.id) ? 'Checking...' : 'Check Now' }}
+                                            </button>
+                                            <div data-page-dropdown class="relative" @keydown.escape="closePageDropdown(page.id)">
+                                                <button
+                                                    @click="togglePageDropdown(page.id, $event)"
+                                                    type="button"
+                                                    class="inline-flex items-center px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    :aria-expanded="openPageDropdowns.has(page.id)"
+                                                    aria-haspopup="true"
+                                                >
+                                                    <svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
+                                                        <path
+                                                            d="M10 3a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM10 8.5a1.5 1.5 0 110 3 1.5 1.5 0 010-3zM11.5 15.5a1.5 1.5 0 10-3 0 1.5 1.5 0 003 0z"
+                                                        />
+                                                    </svg>
+                                                </button>
+                                                <div
+                                                    v-if="openPageDropdowns.has(page.id)"
+                                                    class="absolute right-0 mt-2 w-40 rounded-md border border-gray-200 bg-white py-1 shadow-lg z-10"
+                                                >
+                                                    <button
+                                                        @click="handlePageDelete(page.id)"
+                                                        type="button"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                                    >
+                                                        Delete
+                                                    </button>
+                                                </div>
+                                            </div>
                                         </div>
                                     </div>
                                 </li>

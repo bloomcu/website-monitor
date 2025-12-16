@@ -5,6 +5,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\WebsitesController;
 use App\Http\Controllers\PagesController;
+use App\Http\Controllers\PageUptimeController;
 
 // Public routes
 Route::post('/register', [AuthController::class, 'register']);
@@ -25,4 +26,5 @@ Route::middleware('auth:sanctum')->group(function () {
     // Websites & Pages
     Route::apiResource('websites', WebsitesController::class);
     Route::apiResource('websites.pages', PagesController::class)->shallow();
+    Route::post('/pages/{page}/check', [PageUptimeController::class, 'check']);
 });
