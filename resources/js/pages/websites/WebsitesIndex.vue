@@ -61,12 +61,13 @@ const goToWebsite = (id) => {
                 <div>
                     <h1 class="text-2xl font-bold text-gray-900">Websites</h1>
                     <p v-if="lastUpdated" class="text-xs text-gray-500 mt-1">
-                        Last updated: {{ lastUpdated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }} • Next refresh in {{ minutesUntilRefresh }} {{ minutesUntilRefresh === 1 ? 'minute' : 'minutes' }}
+                        Last updated: {{ lastUpdated.toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' }) }} • Next refresh in
+                        {{ minutesUntilRefresh }} {{ minutesUntilRefresh === 1 ? 'minute' : 'minutes' }}
                     </p>
                 </div>
                 <button
                     @click="goToCreate"
-                    class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                    class="inline-flex items-center px-4 py-1.5 border border-neutral-900 bg-neutral-900 text-sm font-semibold rounded-full text-white shadow-sm transition hover:bg-neutral-800 active:bg-neutral-900 active:scale-95 focus:outline-none cursor-pointer"
                 >
                     Add Website
                 </button>
@@ -120,7 +121,7 @@ const goToWebsite = (id) => {
                 <div class="mt-6">
                     <button
                         @click="goToCreate"
-                        class="inline-flex items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                        class="inline-flex items-center px-4 py-1.5 border border-neutral-900 bg-neutral-900 text-sm font-semibold rounded-full text-white shadow-sm transition hover:bg-neutral-800 active:bg-neutral-900 active:scale-95 focus:outline-none cursor-pointer"
                     >
                         <svg class="-ml-1 mr-2 h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                             <path
@@ -140,11 +141,11 @@ const goToWebsite = (id) => {
                     v-for="website in websites"
                     :key="website.id"
                     @click="goToWebsite(website.id)"
-                    class="relative rounded-lg border bg-white px-6 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
+                    class="relative rounded-lg border px-6 py-5 shadow-sm hover:shadow-md transition-shadow cursor-pointer"
                     :class="{
-                        'border-green-300 bg-green-50': website.is_healthy && website.total_pages_count > 0,
-                        'border-red-300 bg-red-50': !website.is_healthy && website.total_pages_count > 0,
-                        'border-gray-300': website.total_pages_count === 0
+                        'border-2 border-green-300 bg-green-50/40': website.is_healthy && website.total_pages_count > 0,
+                        'border-2 border-red-300 bg-red-50/40': !website.is_healthy && website.total_pages_count > 0,
+                        'border-2 border-gray-300 bg-gray-50/40': website.total_pages_count === 0
                     }"
                 >
                     <div class="flex items-start justify-between">
@@ -200,10 +201,7 @@ const goToWebsite = (id) => {
                                 </svg>
                                 {{ website.is_healthy ? 'Healthy' : 'Issues' }}
                             </span>
-                            <span
-                                v-else
-                                class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600"
-                            >
+                            <span v-else class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">
                                 No pages
                             </span>
                         </div>
@@ -226,9 +224,7 @@ const goToWebsite = (id) => {
                                 <span class="text-gray-500 ml-1">down</span>
                             </div>
                         </div>
-                        <div class="text-gray-500">
-                            {{ website.total_pages_count }} {{ website.total_pages_count === 1 ? 'page' : 'pages' }}
-                        </div>
+                        <div class="text-gray-500">{{ website.total_pages_count }} {{ website.total_pages_count === 1 ? 'page' : 'pages' }}</div>
                     </div>
                 </div>
             </div>

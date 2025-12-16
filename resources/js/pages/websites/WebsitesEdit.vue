@@ -62,9 +62,7 @@ const cancel = () => {
                 <div class="md:col-span-1">
                     <div class="px-4 sm:px-0">
                         <h3 class="text-lg font-medium leading-6 text-gray-900">Edit Website</h3>
-                        <p class="mt-1 text-sm text-gray-600">
-                            Update the website name and base URL.
-                        </p>
+                        <p class="mt-1 text-sm text-gray-600">Update the website name and base URL.</p>
                     </div>
                 </div>
                 <div class="mt-5 md:mt-0 md:col-span-2">
@@ -84,7 +82,7 @@ const cancel = () => {
                                                 id="name"
                                                 v-model="websiteData.name"
                                                 required
-                                                class="focus:ring-indigo-500 focus:border-indigo-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
+                                                class="focus:ring-neutral-500 focus:border-neutral-500 flex-1 block w-full rounded-md sm:text-sm border-gray-300 p-2 border"
                                                 placeholder="My Website"
                                             />
                                         </div>
@@ -112,13 +110,13 @@ const cancel = () => {
                                 <button
                                     type="button"
                                     @click="cancel"
-                                    class="bg-white py-2 px-4 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 mr-3"
+                                    class="inline-flex items-center px-4 py-1.5 border border-neutral-200 bg-white text-sm font-medium rounded-full text-neutral-700 shadow-sm transition hover:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-100 active:scale-95 focus:outline-none mr-3 cursor-pointer"
                                 >
                                     Cancel
                                 </button>
                                 <button
                                     type="submit"
-                                    class="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    class="inline-flex items-center px-4 py-1.5 border border-neutral-900 bg-neutral-900 text-sm font-semibold rounded-full text-white shadow-sm transition hover:bg-neutral-800 active:bg-neutral-900 active:scale-95 focus:outline-none cursor-pointer"
                                 >
                                     Update
                                 </button>

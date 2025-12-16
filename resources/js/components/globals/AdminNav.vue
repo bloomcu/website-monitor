@@ -78,13 +78,31 @@ const toggleMobileAdmin = () => {
     <nav class="sticky top-0 z-40 border-b border-neutral-200 bg-white/90 backdrop-blur">
         <div class="mx-auto flex h-16 w-full items-center justify-between px-4 sm:px-6 lg:px-8">
             <div class="flex flex-1 items-center gap-6">
-<router-link :to="{ name: 'websites.index' }" class="text-lg font-semibold text-neutral-900">Website Monitor</router-link>
+                <router-link :to="{ name: 'websites.index' }" class="text-lg font-semibold text-neutral-900">
+                    <svg
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 24 24"
+                        width="30"
+                        height="30"
+                        fill="none"
+                        stroke="#000000"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        style="opacity: 1"
+                    >
+                        <circle cx="12" cy="12" r="10" />
+                        <path d="m14.31 8l5.74 9.94M9.69 8h11.48M7.38 12l5.74-9.94M9.69 16L3.95 6.06M14.31 16H2.83m13.79-4l-5.74 9.94" />
+                    </svg>
+                </router-link>
 
                 <div v-if="isAuthenticated" class="hidden items-center gap-1 text-sm font-medium text-neutral-500 md:flex">
+                    <router-link :to="{ name: 'websites.index' }" :class="[navLinkClasses, { [activeNavClasses]: isRouteActive('websites.index') }]">
+                        Websites
+                    </router-link>
                     <router-link v-if="isAdmin" :to="{ name: 'dashboard' }" :class="[navLinkClasses, { [activeNavClasses]: isRouteActive('dashboard') }]">
                         Dashboard
                     </router-link>
-
                 </div>
                 <button
                     v-if="isAuthenticated"
@@ -173,6 +191,16 @@ const toggleMobileAdmin = () => {
                 <div class="border-t border-neutral-200 bg-white/95 pb-6 pt-4 shadow-sm">
                     <div class="mx-auto flex w-full max-w-[1563px] flex-col gap-4 px-4 sm:px-6 lg:px-8">
                         <div class="space-y-2 text-sm font-medium text-neutral-600">
+                            <router-link
+                                :to="{ name: 'websites.index' }"
+                                :class="[
+                                    'block rounded-xl px-3 py-2 transition hover:bg-neutral-100 hover:text-neutral-900',
+                                    { 'bg-neutral-900 text-white hover:bg-neutral-900 hover:text-white': isRouteActive('websites.index') }
+                                ]"
+                                @click="closeMobileMenu"
+                            >
+                                Websites
+                            </router-link>
                             <router-link
                                 v-if="isAdmin"
                                 :to="{ name: 'dashboard' }"

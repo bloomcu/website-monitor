@@ -13,7 +13,7 @@ import WebsitesEdit from '@/pages/websites/WebsitesEdit.vue'
 const routes = [
     {
         path: '/',
-        redirect: '/websites'
+        redirect: '/admin/websites'
     },
     {
         path: '/admin',
@@ -22,25 +22,25 @@ const routes = [
         meta: { requiresAuth: true, roles: ['dashboard'] }
     },
     {
-        path: '/websites',
+        path: '/admin/websites',
         name: 'websites.index',
         component: WebsitesIndex,
         meta: { requiresAuth: true }
     },
     {
-        path: '/websites/create',
+        path: '/admin/websites/create',
         name: 'websites.create',
         component: WebsitesCreate,
         meta: { requiresAuth: true }
     },
     {
-        path: '/websites/:id/edit',
+        path: '/admin/websites/:id/edit',
         name: 'websites.edit',
         component: WebsitesEdit,
         meta: { requiresAuth: true }
     },
     {
-        path: '/websites/:id',
+        path: '/admin/websites/:id',
         name: 'websites.show',
         component: WebsitesShow,
         meta: { requiresAuth: true }
@@ -89,7 +89,7 @@ router.beforeEach((to, from, next) => {
         }
     } else if (to.matched.some((record) => record.meta.guest)) {
         if (token) {
-            next({ name: 'admin' })
+            next({ name: 'websites.index' })
         } else {
             next()
         }

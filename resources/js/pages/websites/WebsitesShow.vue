@@ -3,6 +3,7 @@ import { ref, onMounted, onBeforeUnmount, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { storeToRefs } from 'pinia'
 import { onClickOutside } from '@vueuse/core'
+import moment from 'moment'
 import { useWebsiteStore } from '@/stores/website'
 import DefaultLayout from '@/layouts/DefaultLayout.vue'
 import StatusBadge from '@/components/ui/StatusBadge.vue'
@@ -93,6 +94,14 @@ const formatTimeAgo = (timestamp) => {
     const days = Math.floor(hours / 24)
     if (days < 7) return `${days}d ago`
     return then.toLocaleDateString()
+}
+
+const formatLastChecked = (timestamp) => {
+    if (!timestamp) return ''
+    const checkedMoment = moment(timestamp)
+    const relativeTime = checkedMoment.fromNow()
+    const timeString = checkedMoment.format('h:mm A')
+    return `Checked ${relativeTime} at ${timeString}`
 }
 
 const showDropdown = ref(false)
@@ -223,11 +232,11 @@ onBeforeUnmount(() => {
                                 </div>
                             </div>
                         </div>
-                        <div class="mt-4 flex md:mt-0 md:ml-4 items-center gap-3">
+                        <div class="mt-4 flex md:mt-0 md:ml-4 items-center">
                             <button
                                 @click="refresh"
                                 type="button"
-                                class="inline-flex items-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                class="inline-flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white hover:underline active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 cursor-pointer"
                             >
                                 Refresh
                             </button>
@@ -235,7 +244,7 @@ onBeforeUnmount(() => {
                                 <button
                                     @click="toggleDropdown"
                                     type="button"
-                                    class="inline-flex items-center px-3 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                    class="inline-flex items-center px-3 py-2 border border-transparent hover:border-gray-300 rounded-md text-sm font-medium text-gray-700 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 cursor-pointer"
                                     :aria-expanded="showDropdown"
                                     aria-haspopup="true"
                                 >
@@ -249,14 +258,14 @@ onBeforeUnmount(() => {
                                     <button
                                         @click="handleEdit"
                                         type="button"
-                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                        class="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer"
                                     >
                                         Edit
                                     </button>
                                     <button
                                         @click="handleDelete"
                                         type="button"
-                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer"
                                     >
                                         Delete Project
                                     </button>
@@ -274,7 +283,11 @@ onBeforeUnmount(() => {
                             </div>
                             <button
                                 @click="toggleAddForm"
-                                class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                :class="
+                                    showAddForm
+                                        ? 'inline-flex items-center px-4 py-1.5 border border-neutral-200 bg-white text-sm font-medium rounded-full text-neutral-700 shadow-sm transition hover:border-neutral-300 hover:bg-neutral-100 active:bg-neutral-100 active:scale-95 focus:outline-none cursor-pointer'
+                                        : 'inline-flex items-center px-4 py-1.5 border border-neutral-900 bg-neutral-900 text-sm font-semibold rounded-full text-white shadow-sm transition hover:bg-neutral-800 active:bg-neutral-900 active:scale-95 focus:outline-none cursor-pointer'
+                                "
                             >
                                 {{ showAddForm ? 'Cancel' : 'Add Page' }}
                             </button>
@@ -304,14 +317,14 @@ onBeforeUnmount(() => {
                                             v-model="newPage.url"
                                             required
                                             placeholder="https://example.com/page"
-                                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm transition-colors"
+                                            class="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-neutral-500 focus:border-neutral-500 sm:text-sm transition-colors"
                                             autofocus
                                         />
                                     </div>
                                     <div class="pt-6">
                                         <button
                                             type="submit"
-                                            class="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-indigo-600 hover:bg-indigo-700 active:bg-indigo-800 active:scale-95 transition-all focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 shadow-sm"
+                                            class="inline-flex items-center px-4 py-1.5 border border-neutral-900 bg-neutral-900 text-sm font-semibold rounded-full text-white shadow-sm transition hover:bg-neutral-800 active:bg-neutral-900 active:scale-95 focus:outline-none cursor-pointer"
                                         >
                                             Add Page
                                         </button>
@@ -322,7 +335,7 @@ onBeforeUnmount(() => {
 
                         <div class="border-t border-gray-200 overflow-visible">
                             <ul role="list" class="divide-y divide-gray-200 overflow-visible" v-if="website.pages && website.pages.length > 0">
-                                <li v-for="page in website.pages" :key="page.id" class="px-4 py-4 sm:px-6 hover:bg-gray-50">
+                                <li v-for="page in website.pages" :key="page.id" class="px-4 py-4 sm:px-6">
                                     <div class="flex items-center justify-between">
                                         <div class="flex flex-1 items-center min-w-0 mr-4">
                                             <div class="flex-shrink-0">
@@ -333,13 +346,12 @@ onBeforeUnmount(() => {
                                                     :href="page.url"
                                                     target="_blank"
                                                     rel="noopener noreferrer"
-                                                    class="text-sm font-medium text-indigo-600 truncate hover:underline"
+                                                    class="text-sm font-medium text-neutral-700 truncate hover:text-neutral-900 hover:underline"
                                                     >{{ page.url }}</a
                                                 >
                                                 <div class="flex text-sm text-gray-500 space-x-4 mt-1">
-                                                    <span v-if="page.last_status_code">Code: {{ page.last_status_code }}</span>
                                                     <span v-if="page.last_response_time_ms">{{ page.last_response_time_ms }}ms</span>
-                                                    <span v-if="page.last_checked_at">Last Checked: {{ new Date(page.last_checked_at).toLocaleString() }}</span>
+                                                    <span v-if="page.last_checked_at">{{ formatLastChecked(page.last_checked_at) }}</span>
                                                 </div>
                                             </div>
                                         </div>
@@ -347,7 +359,7 @@ onBeforeUnmount(() => {
                                             <button
                                                 @click="checkPageUptime(page.id)"
                                                 :disabled="checkingPages.has(page.id)"
-                                                class="text-indigo-600 hover:text-indigo-900 active:text-indigo-800 active:scale-95 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-transform"
+                                                class="text-neutral-700 hover:underline active:text-neutral-800 active:scale-95 text-sm font-medium disabled:opacity-50 disabled:cursor-not-allowed transition-transform cursor-pointer"
                                             >
                                                 {{ checkingPages.has(page.id) ? 'Checking...' : 'Check Now' }}
                                             </button>
@@ -355,7 +367,7 @@ onBeforeUnmount(() => {
                                                 <button
                                                     @click="togglePageDropdown(page.id, $event)"
                                                     type="button"
-                                                    class="inline-flex items-center px-2 py-1.5 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                                    class="inline-flex items-center px-2 py-1.5 border border-transparent hover:border-gray-300 rounded-md text-sm font-medium text-gray-700 active:bg-gray-100 active:scale-95 transition-transform focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-neutral-500 cursor-pointer"
                                                     :aria-expanded="openPageDropdowns.has(page.id)"
                                                     aria-haspopup="true"
                                                 >
@@ -372,7 +384,7 @@ onBeforeUnmount(() => {
                                                     <button
                                                         @click="handlePageDelete(page.id)"
                                                         type="button"
-                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors"
+                                                        class="block w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100 active:bg-gray-200 transition-colors cursor-pointer"
                                                     >
                                                         Delete
                                                     </button>
@@ -400,7 +412,9 @@ onBeforeUnmount(() => {
                                         <span :class="check.status === 'up' ? 'text-green-500' : 'text-red-500'">●</span>
                                         <span class="text-gray-400">{{ formatTimeAgo(check.checked_at) }}</span>
                                         <span class="text-gray-300">·</span>
-                                        <span class="truncate flex-1 min-w-0">{{ check.page?.url?.replace(/^https?:\/\//, '') || 'Unknown' }}</span>
+                                        <span class="text-gray-400 truncate flex-1 min-w-0">{{
+                                            check.page?.url?.replace(/^https?:\/\//, '') || 'Unknown'
+                                        }}</span>
                                         <span class="text-gray-400">{{ check.response_time_ms }}ms</span>
                                     </div>
                                 </div>
